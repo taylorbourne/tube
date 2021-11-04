@@ -594,3 +594,17 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 
 }
+
+func PlaylistFilter(w http.ResponseWriter, r *http.Request) {
+	var request map[int64]interface{}
+
+	_ = json.NewDecoder(r.Body).Decode(&request)
+
+	response, err := saveFilter(request)
+
+	if err == nil {
+		httpStatusError(w, r, 500)
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}

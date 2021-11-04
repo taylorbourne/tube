@@ -1,0 +1,1 @@
+export const GET_SYSTEM_DATA = JSON.stringify({ cmd: "getServerConfig" })

@@ -1,8 +1,3 @@
-// Copyright 2019 marmei. All rights reserved.
-// Use of this source code is governed by a MIT license that can be found in the
-// LICENSE file.
-// GitHub: https://github.com/xteve-project/xTeVe
-
 package main
 
 import (
@@ -15,25 +10,6 @@ import (
 
 	"xteve/src"
 )
-
-// GitHubStruct : GitHub Account. Über diesen Account werden die Updates veröffentlicht
-type GitHubStruct struct {
-	Branch string
-	Repo   string
-	Update bool
-	User   string
-}
-
-// GitHub : GitHub Account
-// If you want to fork this project, enter your Github account here. This prevents a newer version of xTeVe from updating your version.
-var GitHub = GitHubStruct{Branch: "master", User: "xteve-project", Repo: "xTeVe-Downloads", Update: true}
-
-/*
-	Branch: GitHub Branch
-	User: 	GitHub Username
-	Repo: 	GitHub Repository
-	Update: Automatic updates from the GitHub repository [true|false]
-*/
 
 // Name : Programmname
 const Name = "xTeVe"
@@ -70,10 +46,8 @@ func main() {
 
 	var system = &src.System
 	system.APIVersion = APIVersion
-	system.Branch = GitHub.Branch
 	system.Build = build[len(build)-1:][0]
 	system.DBVersion = DBVersion
-	system.GitHub = GitHub
 	system.Name = Name
 	system.Version = strings.Join(build[0:len(build)-1], ".")
 
@@ -144,12 +118,6 @@ func main() {
 		system.Flag.Port = *port
 	}
 
-	// Branch
-	system.Flag.Branch = *gitBranch
-	if len(system.Flag.Branch) > 0 {
-		fmt.Println("Git Branch is now:", system.Flag.Branch)
-	}
-
 	// Debug Level
 	system.Flag.Debug = *debug
 	if system.Flag.Debug > 3 {
@@ -185,11 +153,6 @@ func main() {
 	if err != nil {
 		src.ShowError(err, 0)
 		os.Exit(0)
-	}
-
-	err = src.BinaryUpdate()
-	if err != nil {
-		src.ShowError(err, 0)
 	}
 
 	err = src.StartSystem(false)

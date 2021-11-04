@@ -57,11 +57,6 @@ func Init() (err error) {
 	// Default Logeinträge, wird später von denen aus der settings.json überschrieben. Muss gemacht werden, damit die ersten Einträge auch im Log (webUI aangezeigt werden)
 	Settings.LogEntriesRAM = 500
 
-	// Variablen für den Update Prozess
-	//System.Update.Git = "https://github.com/xteve-project/xTeVe-Downloads/blob"
-	System.Update.Git = fmt.Sprintf("https://github.com/%s/%s/blob", System.GitHub.User, System.GitHub.Repo)
-	System.Update.Name = "xteve_2"
-
 	// Ordnerpfade festlegen
 	var tempFolder = os.TempDir() + string(os.PathSeparator) + System.AppName + string(os.PathSeparator)
 	tempFolder = getPlatformPath(strings.Replace(tempFolder, "//", "/", -1))
@@ -140,12 +135,6 @@ func Init() (err error) {
 		return
 	}
 
-	// Bedingte Update Änderungen durchführen
-	err = conditionalUpdateChanges()
-	if err != nil {
-		return
-	}
-
 	// Einstellungen laden (settings.json)
 	showInfo(fmt.Sprintf("Load Settings:%s", System.File.Settings))
 
@@ -174,20 +163,6 @@ func Init() (err error) {
 	if err != nil {
 		return
 	}
-
-	// Branch festlegen
-	System.Branch = Settings.Branch
-
-	if System.Dev == true {
-		System.Branch = "Development"
-	}
-
-	if len(System.Branch) == 0 {
-		System.Branch = "master"
-	}
-
-	showInfo(fmt.Sprintf("GitHub:https://github.com/%s", System.GitHub.User))
-	showInfo(fmt.Sprintf("Git Branch:%s [%s]", System.Branch, System.GitHub.User))
 
 	// Domainnamen setzten
 	setGlobalDomain(fmt.Sprintf("%s:%s", System.IPAddress, Settings.Port))

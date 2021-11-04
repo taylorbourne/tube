@@ -48,7 +48,6 @@ export const initialState = {
         "authentication.xml": false,
         "backup.keep": 10,
         "backup.path": "",
-        "git.branch": "",
         "buffer": "-",
         "buffer.size.kb": 1024,
         "buffer.timeout": 500,
@@ -81,7 +80,6 @@ export const initialState = {
         "udpxy": "",
         "version": "2.1.0",
         "xepg.replace.missing.images": true,
-        "xteveAutoUpdate": true
     },
     "status": true,
     "xepg": {

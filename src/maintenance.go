@@ -1,7 +1,6 @@
 package src
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
@@ -10,7 +9,6 @@ import (
 func InitMaintenance() (err error) {
 
 	rand.Seed(time.Now().Unix())
-	System.TimeForAutoUpdate = fmt.Sprintf("0%d%d", randomTime(0, 2), randomTime(10, 59))
 
 	go maintenance()
 
@@ -64,18 +62,11 @@ func maintenance() {
 
 			}
 
-			// Update xTeVe (Binary)
-			if System.TimeForAutoUpdate == t.Format("1504") {
-				BinaryUpdate()
-			}
-
 		}
 
 		time.Sleep(60 * time.Second)
 
 	}
-
-	return
 }
 
 func randomTime(min, max int) int {

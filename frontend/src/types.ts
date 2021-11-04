@@ -52,7 +52,6 @@ export type SettingsType = {
   'authentication.xml': boolean;
   'backup.keep': number,
   'backup.path': string;
-  'git.branch': string;
   buffer: string;
   'buffer.size.kb': number;
   'buffer.timeout': number;
@@ -83,7 +82,7 @@ export type SettingsType = {
   udpxy: string;
   version: string;
   'xepg.replace.missing.images': boolean;
-  xteveAutoUpdate: boolean;}
+}
 
 export type ServerConfigType = {
   "clientInfo": ClientInfoType,

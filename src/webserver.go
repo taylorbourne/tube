@@ -383,17 +383,6 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 		// GET
 		case "GET_SYSTEM_DATA":
-
-			switch System.Branch {
-
-			case "master":
-				response.ClientInfo.Version = System.Version
-
-			default:
-				response.ClientInfo.Version = fmt.Sprintf("%s (%s)", System.Version, System.Build)
-				response.ClientInfo.Branch = System.Branch
-			}
-
 			response.ClientInfo.ARCH = System.ARCH
 			response.ClientInfo.EpgSource = Settings.EpgSource
 			response.ClientInfo.DVR = System.Addresses.DVR

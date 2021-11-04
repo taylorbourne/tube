@@ -77,7 +77,6 @@ type SystemStruct struct {
 	Name                   string
 	OS                     string
 	ScanInProgress         int
-	TimeForAutoUpdate      string
 
 	Notification map[string]Notification
 
@@ -87,13 +86,6 @@ type SystemStruct struct {
 		M3U string
 		WEB string
 		XML string
-	}
-
-	GitHub struct {
-		Branch string
-		Repo   string
-		Update bool
-		User   string
 	}
 
 	Update struct {
@@ -107,12 +99,6 @@ type SystemStruct struct {
 	WEB     struct {
 		Menu []string
 	}
-}
-
-// GitStruct : Updateinformationen von GitHub
-type GitStruct struct {
-	Filename string `json:"filename"`
-	Version  string `json:"version"`
 }
 
 // DataStruct : Alle Daten werden hier abgelegt. (Lineup, XMLTV)
@@ -261,7 +247,6 @@ type SettingsStruct struct {
 	AuthenticationXML bool     `json:"authentication.xml"`
 	BackupKeep        int      `json:"backup.keep"`
 	BackupPath        string   `json:"backup.path"`
-	Branch            string   `json:"git.branch,omitempty"`
 	Buffer            string   `json:"buffer"`
 	BufferSize        int      `json:"buffer.size.kb"`
 	BufferTimeout     float64  `json:"buffer.timeout"`
@@ -298,7 +283,6 @@ type SettingsStruct struct {
 	UDPxy                     string                `json:"udpxy"`
 	Version                   string                `json:"version"`
 	XepgReplaceMissingImages  bool                  `json:"xepg.replace.missing.images"`
-	XteveAutoUpdate           bool                  `json:"xteveAutoUpdate"`
 }
 
 // LanguageUI : Sprache für das WebUI

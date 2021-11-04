@@ -17,12 +17,10 @@ import (
 	"strings"
 
 	"xteve/src"
-
-	"github.com/markbates/pkger"
 )
 
 // Name
-const Name = "xTeVe"
+const Name = "Tube"
 
 // Version
 const Version = "2.2.0.0200"
@@ -62,8 +60,6 @@ func main() {
 	proxy := flag.String("proxy", "http://localhost:3000/", "Address to proxy requests to")
 	// Dir follows general filesystem pathing rules
 	dir := flag.String("dir", "./frontend/build/", "Directory where the static built app resides")
-	// Embed needs to be absolute, based on the arguments of pkger. See Makefile
-	packaged := flag.String("pkger", "/frontend/build/", "Directory where the static built embeded app resides")
 	// Embed uses the new 1.16 embed functions to offer what pkger does
 	embed := flag.String("embed", "frontend/build", "Directory where the static built embeded app resides (1.16+)")
 
@@ -223,9 +219,6 @@ func main() {
 	case "dir":
 		// Dir mode is useful if you build your react app but don't want to embed it in the binary, such as Docker deploys
 		mux.Handle("/", http.FileServer(EmbedDir{http.Dir(*dir)}))
-	case "pkger":
-		// Pkger mode serves files that are embedded in the binary. Very useful for one-file distribution
-		mux.Handle("/", http.FileServer(EmbedDir{pkger.Dir(*packaged)}))
 	case "embed":
 		// Embed uses the new 1.16+ Embed functionality
 		filesystem := fs.FS(embeded)

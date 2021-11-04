@@ -188,12 +188,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	// err = src.StartWebserver(*mode, *proxy, *dir, *embed, *packaged, embeded)
-	// if err != nil {
-	// 	src.ShowError(err, 0)
-	// 	os.Exit(0)
-	// }
-
 	// Basic ServeMux and API that just sends the time
 	r := mux.NewRouter()
 
@@ -205,9 +199,11 @@ func main() {
 	r.HandleFunc("/web/", src.Web)
 	r.HandleFunc("/download/", src.Download)
 	r.HandleFunc("/api/", src.API)
-	r.HandleFunc("/api/status", src.GetStatus).Methods("GET")
 	r.HandleFunc("/images/", src.Images)
 	r.HandleFunc("/data_images/", src.DataImages)
+
+	//Broken Out (NEW)
+	r.HandleFunc("/api/status", src.GetStatus).Methods("GET")
 
 	// The React serve magic
 	switch *mode {

@@ -1,9 +1,35 @@
 package src
 
+type GetStatusResponseStreams struct {
+	StreamsActive int64 `json:"streams.active,omitempty"`
+	StreamsAll    int64 `json:"streams.all,omitempty"`
+	StreamsXepg   int64 `json:"streams.xepg,omitempty"`
+}
+
+type GetStatusResponseEndpoints struct {
+	URLDvr  string `json:"url.dvr,omitempty"`
+	URLM3U  string `json:"url.m3u,omitempty"`
+	URLXepg string `json:"url.xepg,omitempty"`
+}
+
+type GetStatusResponseVersionInfo struct {
+	VersionAPI   string `json:"version.api,omitempty"`
+	VersionXteve string `json:"version.xteve,omitempty"`
+}
+
+type GetStatusResponse struct {
+	Endpoints   GetStatusResponseEndpoints
+	EpgSource   string `json:"epgSource,omitempty"`
+	Streams     GetStatusResponseStreams
+	Token       string `json:"token,omitempty"`
+	VersionInfo GetStatusResponseVersionInfo
+}
+
+// **** LEGACY BELOW THIS LINE **** //
 // RequestStruct : Anfragen über die Websocket Schnittstelle
 type RequestStruct struct {
 	// Befehle an xTeVe
-	Cmd string `json:"cmd,required"`
+	Cmd string `json:"cmd"`
 
 	// Benutzer
 	DeleteUser bool                   `json:"deleteUser,omitempty"`

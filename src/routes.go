@@ -553,16 +553,31 @@ func getContentType(filename string) (contentType string) {
 	return
 }
 
+func Backup(w http.ResponseWriter, r *http.Request) {
+	_, err := xteveBackup()
+	if err != nil {
+		httpStatusError(w, r, 500)
+		return
+	} else {
+
+	}
+
+}
+
 func GetStatus(w http.ResponseWriter, r *http.Request) {
-	var response APIResponseStruct
-	response.VersionXteve = System.Version
-	response.VersionAPI = System.APIVersion
-	response.StreamsActive = int64(len(Data.Streams.Active))
-	response.StreamsAll = int64(len(Data.Streams.All))
-	response.StreamsXepg = int64(Data.XEPG.XEPGCount)
-	response.EpgSource = Settings.EpgSource
-	response.URLDvr = System.Domain
-	response.URLM3U = System.ServerProtocol.M3U + "://" + System.Domain + "/m3u/xteve.m3u"
-	response.URLXepg = System.ServerProtocol.XML + "://" + System.Domain + "/xmltv/xteve.xml"
-	w.Write([]byte(mapToJSON(response)))
+	response := GetStatusResponse{
+		EpgSource: Settings.EpgSource,
+		Endpoints: GetStatusResponseEndpoints{
+			URLDvr:  System.Domain,
+			URLM3U:  System.ServerProtocol.M3U + "://" + System.Domain + "/m3u/xteve.m3u",
+			URLXepg: System.ServerProtocol.XML + "://" + System.Domain + "/xmltv/xteve.xml",
+		},
+		Streams: GetStatusResponseStreams{
+			StreamsActive: int64(len(Data.Streams.Active)),
+			StreamsAll:    int64(len(Data.Streams.All)),
+			StreamsXepg:   int64(Data.XEPG.XEPGCount),
+		},
+	}
+	json.NewEncoder(w).Encode(response)
+
 }

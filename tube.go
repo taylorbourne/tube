@@ -14,6 +14,8 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/gorilla/mux"
+
 	"strings"
 
 	"xteve/src"
@@ -193,18 +195,19 @@ func main() {
 	// }
 
 	// Basic ServeMux and API that just sends the time
-	mux := http.NewServeMux()
+	r := mux.NewRouter()
 
 	// mux.HandleFunc("/api", basicAPI)
-	mux.HandleFunc("/", src.Index)
-	mux.HandleFunc("/stream/", src.Stream)
-	mux.HandleFunc("/xmltv/", src.Tube)
-	mux.HandleFunc("/m3u/", src.Tube)
-	mux.HandleFunc("/web/", src.Web)
-	mux.HandleFunc("/download/", src.Download)
-	mux.HandleFunc("/api/", src.API)
-	mux.HandleFunc("/images/", src.Images)
-	mux.HandleFunc("/data_images/", src.DataImages)
+	r.HandleFunc("/", src.Index)
+	r.HandleFunc("/stream/", src.Stream)
+	r.HandleFunc("/xmltv/", src.Tube)
+	r.HandleFunc("/m3u/", src.Tube)
+	r.HandleFunc("/web/", src.Web)
+	r.HandleFunc("/download/", src.Download)
+	r.HandleFunc("/api/", src.API)
+	r.HandleFunc("/api/status", src.GetStatus).Methods("GET")
+	r.HandleFunc("/images/", src.Images)
+	r.HandleFunc("/data_images/", src.DataImages)
 
 	// The React serve magic
 	switch *mode {
@@ -215,10 +218,10 @@ func main() {
 		if err != nil {
 			log.Fatalf("Cannot parse proxy address: %s", err)
 		}
-		mux.Handle("/", httputil.NewSingleHostReverseProxy(u))
+		r.Handle("/", httputil.NewSingleHostReverseProxy(u))
 	case "dir":
 		// Dir mode is useful if you build your react app but don't want to embed it in the binary, such as Docker deploys
-		mux.Handle("/", http.FileServer(EmbedDir{http.Dir(*dir)}))
+		r.Handle("/", http.FileServer(EmbedDir{http.Dir(*dir)}))
 	case "embed":
 		// Embed uses the new 1.16+ Embed functionality
 		filesystem := fs.FS(embeded)
@@ -226,14 +229,14 @@ func main() {
 		if err != nil {
 			log.Fatal("Cannot open filesystem", err)
 		}
-		mux.Handle("/", http.FileServer(EmbedDir{http.FS(static)}))
+		r.Handle("/", http.FileServer(EmbedDir{http.FS(static)}))
 	default:
 		// Any other mode would assume you have a reverse proxy, like nginx, that filters traffic
 		log.Println("No react mode; this only works if you have a frontend reverse proxy")
 	}
 	s := &http.Server{
 		Addr:         *port,
-		Handler:      mux,
+		Handler:      r,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}

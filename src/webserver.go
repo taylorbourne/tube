@@ -552,3 +552,17 @@ func getContentType(filename string) (contentType string) {
 
 	return
 }
+
+func GetStatus(w http.ResponseWriter, r *http.Request) {
+	var response APIResponseStruct
+	response.VersionXteve = System.Version
+	response.VersionAPI = System.APIVersion
+	response.StreamsActive = int64(len(Data.Streams.Active))
+	response.StreamsAll = int64(len(Data.Streams.All))
+	response.StreamsXepg = int64(Data.XEPG.XEPGCount)
+	response.EpgSource = Settings.EpgSource
+	response.URLDvr = System.Domain
+	response.URLM3U = System.ServerProtocol.M3U + "://" + System.Domain + "/m3u/xteve.m3u"
+	response.URLXepg = System.ServerProtocol.XML + "://" + System.Domain + "/xmltv/xteve.xml"
+	w.Write([]byte(mapToJSON(response)))
+}

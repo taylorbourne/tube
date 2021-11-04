@@ -45,11 +45,6 @@ export type Notification = {
 
 export type SettingsType = {
   api: boolean;
-  'authentication.api': boolean;
-  'authentication.m3u': boolean;
-  'authentication.pms': boolean;
-  'authentication.web': boolean;
-  'authentication.xml': boolean;
   'backup.keep': number,
   'backup.path': string;
   buffer: string;

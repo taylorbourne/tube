@@ -49,12 +49,17 @@ type SystemStruct struct {
 	}
 
 	Flag struct {
-		Branch  string
-		Debug   int
-		Info    bool
-		Port    string
-		Restore string
-		SSDP    bool
+		Branch   string
+		Debug    int
+		Info     bool
+		Port     string
+		Restore  string
+		SSDP     bool
+		Mode     string
+		Proxy    string
+		Dir      string
+		Embed    string
+		Packaged string
 	}
 
 	Folder struct {

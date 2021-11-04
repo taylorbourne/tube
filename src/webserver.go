@@ -9,8 +9,6 @@ import (
 	"os"
 	"strings"
 
-	"xteve/src/internal/authentication"
-
 	"github.com/gorilla/websocket"
 )
 
@@ -80,17 +78,6 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 	case "/lineup.json":
-		if Settings.AuthenticationPMS {
-
-			_, err := basicAuth(r, "authentication.pms")
-			if err != nil {
-				ShowError(err, 000)
-				httpStatusError(w, r, 403)
-				return
-			}
-
-		}
-
 		response, err = getLineup()
 		w.Header().Set("Content-Type", "application/json")
 
@@ -207,7 +194,7 @@ func Auto(w http.ResponseWriter, r *http.Request) {
 // xTeVe : Web Server /xmltv/ und /m3u/
 func xTeVe(w http.ResponseWriter, r *http.Request) {
 
-	var requestType, groupTitle, file, content, contentType string
+	var groupTitle, file, content, contentType string
 	var err error
 	var path = strings.TrimPrefix(r.URL.Path, "/")
 	var groups = []string{}
@@ -216,8 +203,6 @@ func xTeVe(w http.ResponseWriter, r *http.Request) {
 
 	// XMLTV Datei
 	if strings.Contains(path, "xmltv/") {
-
-		requestType = "xml"
 
 		file = System.Folder.Data + getFilenameFromPath(path)
 
@@ -232,7 +217,6 @@ func xTeVe(w http.ResponseWriter, r *http.Request) {
 	// M3U Datei
 	if strings.Contains(path, "m3u/") {
 
-		requestType = "m3u"
 		groupTitle = r.URL.Query().Get("group-title")
 
 		if !System.Dev {
@@ -250,14 +234,6 @@ func xTeVe(w http.ResponseWriter, r *http.Request) {
 			ShowError(err, 000)
 		}
 
-	}
-
-	// Authentifizierung überprüfen
-	err = urlAuth(r, requestType)
-	if err != nil {
-		ShowError(err, 000)
-		httpStatusError(w, r, 403)
-		return
 	}
 
 	contentType = http.DetectContentType([]byte(content))
@@ -341,44 +317,6 @@ func WS(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// if System.ConfigurationWizard == false {
-
-		// 	switch Settings.AuthenticationWEB {
-
-		// 	// Token Authentication
-		// 	case true:
-
-		// 		var token string
-		// 		tokens, ok := r.URL.Query()["Token"]
-
-		// 		if !ok || len(tokens[0]) < 1 {
-		// 			token = "-"
-		// 		} else {
-		// 			token = tokens[0]
-		// 		}
-
-		// 		newToken, err = tokenAuthentication(token)
-		// 		if err != nil {
-
-		// 			response.Status = false
-		// 			response.Reload = true
-		// 			response.Error = err.Error()
-		// 			request.Cmd = "-"
-
-		// 			if err = conn.WriteJSON(response); err != nil {
-		// 				ShowError(err, 1102)
-		// 			}
-
-		// 			return
-		// 		}
-
-		// 		response.Token = newToken
-		// 		response.Users, _ = authentication.GetAllUserData()
-
-		// 	}
-
-		// }
-
 		switch request.Cmd {
 
 		// GET
@@ -425,9 +363,6 @@ func WS(w http.ResponseWriter, r *http.Request) {
 			response.Data.StreamPreviewUI.Active = Data.StreamPreviewUI.Active
 			response.Data.StreamPreviewUI.Inactive = Data.StreamPreviewUI.Inactive
 
-		case "GET_USER_INFO":
-			response.Users, _ = authentication.GetAllUserData()
-
 		case "GET_LOG":
 			response.Log = WebScreenLog
 
@@ -437,7 +372,6 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 		// SET
 		case "SET_SETTINGS":
-			// var authenticationUpdate = Settings.AuthenticationWEB
 			response.Settings, err = updateServerSettings(request)
 
 		case "SET_M3U":
@@ -454,12 +388,6 @@ func WS(w http.ResponseWriter, r *http.Request) {
 
 		case "SET_EPG_MAPPING":
 			err = saveXEpgMapping(request)
-
-		case "SET_USER_DATA":
-			err = saveUserData(request)
-
-		case "SET_NEW_USER":
-			err = saveNewUser(request)
 
 		case "SET_WIZARD":
 			nextStep, errNew := saveWizard(request)
@@ -565,23 +493,23 @@ func Web(w http.ResponseWriter, r *http.Request) {
 
 	setGlobalDomain(r.Host)
 
-	if System.Dev {
+	// if System.Dev {
 
-		lang, err = loadJSONFileToMap(fmt.Sprintf("html/lang/%s.json", Settings.Language))
-		if err != nil {
-			ShowError(err, 000)
-		}
+	// 	lang, err = loadJSONFileToMap(fmt.Sprintf("html/lang/%s.json", Settings.Language))
+	// 	if err != nil {
+	// 		ShowError(err, 000)
+	// 	}
 
-	} else {
+	// } else {
 
-		var languageFile = "html/lang/en.json"
+	// 	var languageFile = "html/lang/en.json"
 
-		if value, ok := webUI[languageFile].(string); ok {
-			content = GetHTMLString(value)
-			lang = jsonToMap(content)
-		}
+	// 	if _, ok := webUI[languageFile].(string); ok {
+	// 		content = ""
+	// 		lang = jsonToMap(content)
+	// 	}
 
-	}
+	// }
 
 	err = json.Unmarshal([]byte(mapToJSON(lang)), &language)
 	if err != nil {
@@ -614,35 +542,35 @@ func Web(w http.ResponseWriter, r *http.Request) {
 		// 	file = requestFile + "maintenance.html"
 		// }
 
-		requestFile = requestFile + "index.html"
+		// 	requestFile = requestFile + "index.html"
 
-		if _, ok := webUI[requestFile]; ok {
+		// 	if _, ok := webUI[requestFile]; ok {
 
-			if contentType == "text/plain" {
-				w.Header().Set("Content-Disposition", "attachment; filename="+getFilenameFromPath(requestFile))
-			}
+		// 		if contentType == "text/plain" {
+		// 			w.Header().Set("Content-Disposition", "attachment; filename="+getFilenameFromPath(requestFile))
+		// 		}
 
-		} else {
+		// 	} else {
 
-			httpStatusError(w, r, 404)
-			return
-		}
+		// 		httpStatusError(w, r, 404)
+		// 		return
+		// 	}
 
 	}
 
-	if value, ok := webUI[requestFile].(string); ok {
+	// if _, ok := webUI[requestFile].(string); ok {
 
-		content = GetHTMLString(value)
-		contentType = getContentType(requestFile)
+	// 	content = ""
+	// 	contentType = getContentType(requestFile)
 
-		if contentType == "text/plain" {
-			w.Header().Set("Content-Disposition", "attachment; filename="+getFilenameFromPath(requestFile))
-		}
+	// 	if contentType == "text/plain" {
+	// 		w.Header().Set("Content-Disposition", "attachment; filename="+getFilenameFromPath(requestFile))
+	// 	}
 
-	} else {
-		httpStatusError(w, r, 404)
-		return
-	}
+	// } else {
+	// 	httpStatusError(w, r, 404)
+	// 	return
+	// }
 
 	contentType = getContentType(requestFile)
 
@@ -751,45 +679,6 @@ func API(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("content-type", "application/json")
-
-	// if Settings.AuthenticationAPI {
-	// 	var token string
-	// 	switch len(request.Token) {
-	// 	case 0:
-	// 		if request.Cmd == "login" {
-	// 			token, err = authentication.UserAuthentication(request.Username, request.Password)
-	// 			if err != nil {
-	// 				responseAPIError(err)
-	// 				return
-	// 			}
-
-	// 		} else {
-	// 			err = errors.New("login incorrect")
-	// 			if err != nil {
-	// 				responseAPIError(err)
-	// 				return
-	// 			}
-
-	// 		}
-
-	// 	default:
-	// 		token, err = tokenAuthentication(request.Token)
-	// 		fmt.Println(err)
-	// 		if err != nil {
-	// 			responseAPIError(err)
-	// 			return
-	// 		}
-
-	// 	}
-	// 	err = checkAuthorizationLevel(token, "authentication.api")
-	// 	if err != nil {
-	// 		responseAPIError(err)
-	// 		return
-	// 	}
-
-	// 	response.Token = token
-
-	// }
 
 	switch request.Cmd {
 	case "login": // Muss nichts übergeben werden

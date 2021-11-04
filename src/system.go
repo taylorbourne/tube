@@ -70,9 +70,6 @@ func createSystemFiles() (err error) {
 		}
 
 		switch file {
-
-		case "authentication.json":
-			System.File.Authentication = filename
 		case "pms.json":
 			System.File.PMS = filename
 		case "settings.json":
@@ -106,11 +103,6 @@ func loadSettings() (settings SettingsStruct, err error) {
 	dataMap["hdhr"] = make(map[string]interface{})
 
 	defaults["api"] = false
-	defaults["authentication.api"] = false
-	defaults["authentication.m3u"] = false
-	defaults["authentication.pms"] = false
-	defaults["authentication.web"] = false
-	defaults["authentication.xml"] = false
 	defaults["backup.keep"] = 10
 	defaults["backup.path"] = System.Folder.Backup
 	defaults["buffer"] = "-"
@@ -216,27 +208,6 @@ func saveSettings(settings SettingsStruct) (err error) {
 func setGlobalDomain(domain string) {
 
 	System.Domain = domain
-
-	switch Settings.AuthenticationPMS {
-	case true:
-		System.Addresses.DVR = "username:password@" + System.Domain
-	case false:
-		System.Addresses.DVR = System.Domain
-	}
-
-	switch Settings.AuthenticationM3U {
-	case true:
-		System.Addresses.M3U = System.ServerProtocol.M3U + "://" + System.Domain + "/m3u/xteve.m3u?username=xxx&password=yyy<br>(Specific groups: [http://...&group-title=foo,bar])"
-	case false:
-		System.Addresses.M3U = System.ServerProtocol.M3U + "://" + System.Domain + "/m3u/xteve.m3u     (Specific groups: [http://...?group-title=foo,bar])"
-	}
-
-	switch Settings.AuthenticationXML {
-	case true:
-		System.Addresses.XML = System.ServerProtocol.XML + "://" + System.Domain + "/xmltv/xteve.xml?username=xxx&password=yyy"
-	case false:
-		System.Addresses.XML = System.ServerProtocol.XML + "://" + System.Domain + "/xmltv/xteve.xml"
-	}
 
 	if Settings.EpgSource != "XEPG" {
 		System.Addresses.M3U = getErrMsg(2106)

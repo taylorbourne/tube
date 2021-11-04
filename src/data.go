@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"xteve/src/internal/authentication"
 	"xteve/src/internal/imgcache"
 )
 
@@ -147,16 +146,6 @@ func updateServerSettings(request RequestStruct) (settings SettingsStruct, err e
 	err = json.Unmarshal([]byte(mapToJSON(oldSettings)), &Settings)
 	if err != nil {
 		return
-	}
-
-	if Settings.AuthenticationWEB == false {
-
-		Settings.AuthenticationAPI = false
-		Settings.AuthenticationM3U = false
-		Settings.AuthenticationPMS = false
-		Settings.AuthenticationWEB = false
-		Settings.AuthenticationXML = false
-
 	}
 
 	// Buffer Einstellungen überprüfen
@@ -565,81 +554,6 @@ func saveXEpgMapping(request RequestStruct) (err error) {
 
 	}
 
-	return
-}
-
-// Benutzerdaten speichern (WebUI)
-func saveUserData(request RequestStruct) (err error) {
-
-	var userData = request.UserData
-
-	var newCredentials = func(userID string, newUserData map[string]interface{}) (err error) {
-
-		var newUsername, newPassword string
-		if username, ok := newUserData["username"].(string); ok {
-			newUsername = username
-		}
-
-		if password, ok := newUserData["password"].(string); ok {
-			newPassword = password
-		}
-
-		if len(newUsername) > 0 {
-			err = authentication.ChangeCredentials(userID, newUsername, newPassword)
-		}
-
-		return
-	}
-
-	for userID, newUserData := range userData {
-
-		err = newCredentials(userID, newUserData.(map[string]interface{}))
-		if err != nil {
-			return
-		}
-
-		if request.DeleteUser == true {
-			err = authentication.RemoveUser(userID)
-			return
-		}
-
-		delete(newUserData.(map[string]interface{}), "password")
-		delete(newUserData.(map[string]interface{}), "confirm")
-
-		if _, ok := newUserData.(map[string]interface{})["delete"]; ok {
-
-			authentication.RemoveUser(userID)
-
-		} else {
-
-			err = authentication.WriteUserData(userID, newUserData.(map[string]interface{}))
-			if err != nil {
-				return
-			}
-
-		}
-
-	}
-
-	return
-}
-
-// Neuen Benutzer anlegen (WebUI)
-func saveNewUser(request RequestStruct) (err error) {
-
-	var data = request.UserData
-	var username = data["username"].(string)
-	var password = data["password"].(string)
-
-	delete(data, "password")
-	delete(data, "confirm")
-
-	userID, err := authentication.CreateNewUser(username, password)
-	if err != nil {
-		return
-	}
-
-	err = authentication.WriteUserData(userID, data)
 	return
 }
 

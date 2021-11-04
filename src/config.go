@@ -21,7 +21,7 @@ var Settings SettingsStruct
 var Data DataStruct
 
 // SystemFiles : Alle Systemdateien
-var SystemFiles = []string{"authentication.json", "pms.json", "settings.json", "xepg.json", "urls.json"}
+var SystemFiles = []string{"pms.json", "settings.json", "xepg.json", "urls.json"}
 
 // BufferInformation : Informationen über den Buffer (aktive Streams, maximale Streams)
 var BufferInformation sync.Map
@@ -96,11 +96,6 @@ func Init() (err error) {
 
 	System.Compressed.GZxml = getPlatformFile(fmt.Sprintf("%s%s.xml.gz", System.Folder.Data, System.AppName))
 
-	err = activatedSystemAuthentication()
-	if err != nil {
-		return
-	}
-
 	err = resolveHostIP()
 	if err != nil {
 		ShowError(err, 1002)
@@ -169,25 +164,11 @@ func Init() (err error) {
 
 	System.URLBase = fmt.Sprintf("%s://%s:%s", System.ServerProtocol.WEB, System.IPAddress, Settings.Port)
 
-	// HTML Dateien erstellen, mit dev == true werden die lokalen HTML Dateien verwendet
-	if System.Dev == true {
-
-		HTMLInit("webUI", "src", "html"+string(os.PathSeparator), "src"+string(os.PathSeparator)+"webUI.go")
-		err = BuildGoFile()
-		if err != nil {
-			return
-		}
-
-	}
-
 	// DLNA Server starten
 	err = SSDP()
 	if err != nil {
 		return
 	}
-
-	// HTML Datein laden
-	loadHTMLMap()
 
 	return
 }

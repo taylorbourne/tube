@@ -41,11 +41,6 @@ export const initialState = {
     },
     "settings": {
         "api": false,
-        "authentication.api": false,
-        "authentication.m3u": false,
-        "authentication.pms": false,
-        "authentication.web": false,
-        "authentication.xml": false,
         "backup.keep": 10,
         "backup.path": "",
         "buffer": "-",

@@ -337,12 +337,6 @@ func getErrMsg(errCode int) (errMsg string) {
 	case 2302:
 		errMsg = fmt.Sprintf("Channel ID in the XMLTV file has changed. Channel has been deactivated.")
 
-	// Benutzerauthentifizierung
-	case 3000:
-		errMsg = fmt.Sprintf("Database for user authentication could not be initialized.")
-	case 3001:
-		errMsg = fmt.Sprintf("The user has no authorization to load the channels.")
-
 	// Buffer
 	case 4000:
 		errMsg = fmt.Sprintf("Connection to streaming source was interrupted.")

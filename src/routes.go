@@ -558,10 +558,8 @@ func Backup(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		httpStatusError(w, r, 500)
 		return
-	} else {
-
 	}
-
+	w.WriteHeader(http.StatusOK)
 }
 
 func GetStatus(w http.ResponseWriter, r *http.Request) {
@@ -578,6 +576,7 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 			StreamsXepg:   int64(Data.XEPG.XEPGCount),
 		},
 	}
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
 
 }

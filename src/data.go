@@ -352,20 +352,20 @@ func saveFiles(request RequestStruct, fileType string) (err error) {
 }
 
 // Providerdaten manuell aktualisieren (WebUI)
-func updateFile(request RequestStruct, fileType string) (err error) {
+func updateFile(request FileRequest, fileType string) (err error) {
 
 	var updateData = make(map[string]interface{})
 
 	switch fileType {
 
 	case "m3u":
-		updateData = request.Files.M3U
+		updateData = request.M3U
 
 	case "hdhr":
-		updateData = request.Files.HDHR
+		updateData = request.HDHR
 
 	case "xmltv":
-		updateData = request.Files.XMLTV
+		updateData = request.XMLTV
 	}
 
 	for dataID := range updateData {

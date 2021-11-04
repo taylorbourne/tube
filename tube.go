@@ -207,6 +207,8 @@ func main() {
 	r.HandleFunc("/api/backup", src.Backup).Methods("GET")
 	r.HandleFunc("/api/config", src.Config).Methods("POST")
 	r.HandleFunc("/api/filter", src.PlaylistFilter).Methods("POST")
+	r.HandleFunc("/api/hdhr/update", src.HDHRUpdate).Methods("POST")
+	r.HandleFunc("/api/info", src.Info).Methods("GET")
 
 	// The React serve magic
 	switch *mode {

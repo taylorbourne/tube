@@ -595,6 +595,41 @@ func GetStatus(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func HDHRUpdate(w http.ResponseWriter, r *http.Request) {
+
+	var request FileRequest
+
+	_ = json.NewDecoder(r.Body).Decode(&request)
+
+	err := updateFile(request, "hdhr")
+
+	if err != nil {
+		httpStatusError(w, r, 500)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func Info(w http.ResponseWriter, r *http.Request) {
+	response := InfoResponse{
+		ARCH:         System.ARCH,
+		EpgSource:    Settings.EpgSource,
+		DVR:          System.Addresses.DVR,
+		M3U:          System.Addresses.M3U,
+		XML:          System.Addresses.XML,
+		OS:           System.OS,
+		Streams:      fmt.Sprintf("%d / %d", len(Data.Streams.Active), len(Data.Streams.All)),
+		UUID:         Settings.UUID,
+		Errors:       WebScreenLog.Errors,
+		Warnings:     WebScreenLog.Warnings,
+		Notification: System.Notification,
+		// @TODO – does this make sense somewhere else or on it's own request?
+		ConfigurationWizard: System.ConfigurationWizard,
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
 func PlaylistFilter(w http.ResponseWriter, r *http.Request) {
 	var request map[int64]interface{}
 

@@ -1,20 +1,20 @@
 package src
 
 type GetStatusResponseStreams struct {
-	StreamsActive int64 `json:"streams.active,omitempty"`
-	StreamsAll    int64 `json:"streams.all,omitempty"`
-	StreamsXepg   int64 `json:"streams.xepg,omitempty"`
+	StreamsActive int64 `json:"active,omitempty"`
+	StreamsAll    int64 `json:"all,omitempty"`
+	StreamsXepg   int64 `json:"xepg,omitempty"`
 }
 
 type GetStatusResponseEndpoints struct {
-	URLDvr  string `json:"url.dvr,omitempty"`
-	URLM3U  string `json:"url.m3u,omitempty"`
-	URLXepg string `json:"url.xepg,omitempty"`
+	URLDvr  string `json:"dvr,omitempty"`
+	URLM3U  string `json:"m3u,omitempty"`
+	URLXepg string `json:"xepg,omitempty"`
 }
 
 type GetStatusResponseVersionInfo struct {
-	VersionAPI   string `json:"version.api,omitempty"`
-	VersionXteve string `json:"version.xteve,omitempty"`
+	VersionAPI   string `json:"api,omitempty"`
+	VersionXteve string `json:"xteve,omitempty"`
 }
 
 type GetStatusResponse struct {
@@ -30,6 +30,30 @@ type ConfigRequest struct {
 	M3U       *string `json:"m3u,omitempty"`
 	Tuner     *int    `json:"tuner,omitempty"`
 	XMLTV     *string `json:"xmltv,omitempty"`
+}
+
+type FileRequest struct {
+	HDHR  map[string]interface{} `json:"hdhr,omitempty"`
+	M3U   map[string]interface{} `json:"m3u,omitempty"`
+	XMLTV map[string]interface{} `json:"xmltv,omitempty"`
+}
+
+type InfoResponse struct {
+	ARCH                string                  `json:"arch"`
+	Branch              string                  `json:"branch,omitempty"`
+	DVR                 string                  `json:"DVR"`
+	EpgSource           string                  `json:"epgSource"`
+	Errors              int                     `json:"errors"`
+	M3U                 string                  `json:"m3uUrl"`
+	OS                  string                  `json:"os"`
+	Streams             string                  `json:"streams"`
+	UUID                string                  `json:"uuid"`
+	Version             string                  `json:"version"`
+	Warnings            int                     `json:"warnings"`
+	XEPGCount           int64                   `json:"xepg"`
+	XML                 string                  `json:"xepgUrl"`
+	Notification        map[string]Notification `json:"notification,omitempty"`
+	ConfigurationWizard bool                    `json:"configurationWizard"`
 }
 
 // **** LEGACY BELOW THIS LINE **** //

@@ -204,6 +204,8 @@ func main() {
 
 	//Broken Out (NEW)
 	r.HandleFunc("/api/status", src.GetStatus).Methods("GET")
+	r.HandleFunc("/api/backup", src.Backup).Methods("GET")
+	r.HandleFunc("/api/config", src.Config).Methods("POST")
 
 	// The React serve magic
 	switch *mode {

@@ -558,7 +558,7 @@ func saveXEpgMapping(request RequestStruct) (err error) {
 }
 
 // Wizard (WebUI)
-func saveWizard(request RequestStruct) (nextStep int, err error) {
+func saveWizard(request RequestStruct) (err error) {
 
 	var wizard = jsonToMap(mapToJSON(request.Wizard))
 
@@ -568,12 +568,9 @@ func saveWizard(request RequestStruct) (nextStep int, err error) {
 
 		case "tuner":
 			Settings.Tuner = int(value.(float64))
-			nextStep = 1
 
 		case "epgSource":
 			Settings.EpgSource = value.(string)
-			nextStep = 2
-
 		case "m3u", "xmltv":
 
 			var filesMap = make(map[string]interface{})
@@ -607,7 +604,6 @@ func saveWizard(request RequestStruct) (nextStep int, err error) {
 			switch key {
 			case "m3u":
 				Settings.Files.M3U = filesMap
-				nextStep = 3
 
 				err = getProviderData(key, dataID)
 
@@ -624,13 +620,8 @@ func saveWizard(request RequestStruct) (nextStep int, err error) {
 					return
 				}
 
-				if Settings.EpgSource == "PMS" {
-					nextStep = 10
-				}
-
 			case "xmltv":
 				Settings.Files.XMLTV = filesMap
-				nextStep = 10
 
 				err = getProviderData(key, dataID)
 

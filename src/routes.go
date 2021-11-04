@@ -562,6 +562,20 @@ func Backup(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func Config(w http.ResponseWriter, r *http.Request) {
+	var request ConfigRequest
+
+	_ = json.NewDecoder(r.Body).Decode(&request)
+
+	err := saveWizard(request)
+
+	if err == nil {
+		System.ConfigurationWizard = false
+		httpStatusError(w, r, 500)
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
 func GetStatus(w http.ResponseWriter, r *http.Request) {
 	response := GetStatusResponse{
 		EpgSource: Settings.EpgSource,

@@ -558,9 +558,9 @@ func saveXEpgMapping(request RequestStruct) (err error) {
 }
 
 // Wizard (WebUI)
-func saveWizard(request RequestStruct) (err error) {
+func saveWizard(request ConfigRequest) (err error) {
 
-	var wizard = jsonToMap(mapToJSON(request.Wizard))
+	var wizard = jsonToMap(mapToJSON(request))
 
 	for key, value := range wizard {
 
@@ -571,14 +571,12 @@ func saveWizard(request RequestStruct) (err error) {
 
 		case "epgSource":
 			Settings.EpgSource = value.(string)
-		case "m3u", "xmltv":
 
+		case "m3u", "xmltv":
 			var filesMap = make(map[string]interface{})
 			var data = make(map[string]interface{})
 			var indicator, dataID string
-
 			filesMap = make(map[string]interface{})
-
 			data["type"] = key
 			data["new"] = true
 
@@ -598,13 +596,11 @@ func saveWizard(request RequestStruct) (err error) {
 
 			dataID = indicator + randomString(19)
 			data["file.source"] = value.(string)
-
 			filesMap[dataID] = data
 
 			switch key {
 			case "m3u":
 				Settings.Files.M3U = filesMap
-
 				err = getProviderData(key, dataID)
 
 				if err != nil {
@@ -614,6 +610,7 @@ func saveWizard(request RequestStruct) (err error) {
 				}
 
 				err = buildDatabaseDVR()
+
 				if err != nil {
 					ShowError(err, 000)
 					delete(filesMap, dataID)
@@ -622,11 +619,9 @@ func saveWizard(request RequestStruct) (err error) {
 
 			case "xmltv":
 				Settings.Files.XMLTV = filesMap
-
 				err = getProviderData(key, dataID)
 
 				if err != nil {
-
 					ShowError(err, 000)
 					delete(filesMap, dataID)
 					return

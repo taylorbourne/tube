@@ -25,6 +25,13 @@ type GetStatusResponse struct {
 	VersionInfo GetStatusResponseVersionInfo
 }
 
+type ConfigRequest struct {
+	EpgSource *string `json:"epgSource,omitempty"`
+	M3U       *string `json:"m3u,omitempty"`
+	Tuner     *int    `json:"tuner,omitempty"`
+	XMLTV     *string `json:"xmltv,omitempty"`
+}
+
 // **** LEGACY BELOW THIS LINE **** //
 // RequestStruct : Anfragen über die Websocket Schnittstelle
 type RequestStruct struct {

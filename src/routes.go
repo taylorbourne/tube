@@ -632,6 +632,24 @@ func GetInfo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func GetXEPG(w http.ResponseWriter, r *http.Request) {
+	var response map[string]interface{}
+	var XEPG = make(map[string]interface{})
+
+	if len(Data.Streams.Active) > 0 {
+		XEPG["epgMapping"] = Data.XEPG.Channels
+		XEPG["xmltvMap"] = Data.XMLTV.Mapping
+	} else {
+		XEPG["epgMapping"] = make(map[string]interface{})
+		XEPG["xmltvMap"] = make(map[string]interface{})
+	}
+
+	response = XEPG
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
 func GetLog(w http.ResponseWriter, r *http.Request) {
 	response := WebScreenLog.Log
 	w.WriteHeader(http.StatusOK)
@@ -668,6 +686,36 @@ func SaveFile(w http.ResponseWriter, r *http.Request) {
 		httpStatusError(w, r, 500)
 	}
 	w.WriteHeader(http.StatusOK)
+}
+
+func GetPlaylistStreams(w http.ResponseWriter, r *http.Request) {
+	response := StreamResponse{
+		Active:   Data.StreamPreviewUI.Active,
+		Inactive: Data.StreamPreviewUI.Inactive,
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+
+}
+
+func GetPlaylistInfo(w http.ResponseWriter, r *http.Request) {
+	response := PlaylistReponse{
+		M3U: M3U{
+			Groups: Groups{
+				Text:  Data.Playlist.M3U.Groups.Text,
+				Value: Data.Playlist.M3U.Groups.Value,
+			},
+		},
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+
+}
+
+func GetSettings(w http.ResponseWriter, r *http.Request) {
+	var response SettingsResponse = Settings
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
 }
 
 func PlaylistFilter(w http.ResponseWriter, r *http.Request) {

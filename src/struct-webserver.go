@@ -56,6 +56,26 @@ type InfoResponse struct {
 	ConfigurationWizard bool                    `json:"configurationWizard"`
 }
 
+type Groups struct {
+	Text  []string `json:"text"`
+	Value []string `json:"value"`
+}
+
+type M3U struct {
+	Groups Groups `json:"groups"`
+}
+
+type PlaylistReponse struct {
+	M3U M3U `json:"m3u"`
+}
+
+type SettingsResponse = SettingsStruct
+
+type StreamResponse struct {
+	Active   []string `json:"activeStreams"`
+	Inactive []string `json:"inactiveStreams"`
+}
+
 // **** LEGACY BELOW THIS LINE **** //
 // RequestStruct : Anfragen über die Websocket Schnittstelle
 type RequestStruct struct {

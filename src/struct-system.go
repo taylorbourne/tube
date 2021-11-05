@@ -244,17 +244,17 @@ type Notification struct {
 // SettingsStruct : Inhalt der settings.json
 type SettingsStruct struct {
 	API           bool     `json:"api"`
-	BackupKeep    int      `json:"backup.keep"`
-	BackupPath    string   `json:"backup.path"`
+	BackupKeep    int      `json:"backupKeep"`
+	BackupPath    string   `json:"backupPath"`
 	Buffer        string   `json:"buffer"`
-	BufferSize    int      `json:"buffer.size.kb"`
-	BufferTimeout float64  `json:"buffer.timeout"`
-	CacheImages   bool     `json:"cache.images"`
+	BufferSize    int      `json:"bufferSizeKb"`
+	BufferTimeout float64  `json:"bufferTimeout"`
+	CacheImages   bool     `json:"cacheImages"`
 	EpgSource     string   `json:"epgSource"`
-	FFmpegOptions string   `json:"ffmpeg.options"`
-	FFmpegPath    string   `json:"ffmpeg.path"`
-	VLCOptions    string   `json:"vlc.options"`
-	VLCPath       string   `json:"vlc.path"`
+	FFmpegOptions string   `json:"ffmpegOptions"`
+	FFmpegPath    string   `json:"ffmpegPath"`
+	VLCOptions    string   `json:"vlcOptions"`
+	VLCPath       string   `json:"vlcPath"`
 	FileM3U       []string `json:"file,omitempty"`  // Beim Wizard wird die M3U in ein Slice gespeichert
 	FileXMLTV     []string `json:"xmltv,omitempty"` // Altes Speichersystem der Provider XML Datei Slice (Wird für die Umwandlung auf das neue benötigt)
 
@@ -264,24 +264,24 @@ type SettingsStruct struct {
 		XMLTV map[string]interface{} `json:"xmltv"`
 	} `json:"files"`
 
-	FilesUpdate               bool                  `json:"files.update"`
+	FilesUpdate               bool                  `json:"filesUpdate"`
 	Filter                    map[int64]interface{} `json:"filter"`
 	Key                       string                `json:"key,omitempty"`
 	Language                  string                `json:"language"`
-	LogEntriesRAM             int                   `json:"log.entries.ram"`
-	M3U8AdaptiveBandwidthMBPS int                   `json:"m3u8.adaptive.bandwidth.mbps"`
-	MappingFirstChannel       float64               `json:"mapping.first.channel"`
+	LogEntriesRAM             int                   `json:"logEntriesRam"`
+	M3U8AdaptiveBandwidthMBPS int                   `json:"m3u8BandwidthMbps"`
+	MappingFirstChannel       float64               `json:"mappingFirstChannel"`
 	Port                      string                `json:"port"`
 	SSDP                      bool                  `json:"ssdp"`
-	TempPath                  string                `json:"temp.path"`
+	TempPath                  string                `json:"tempPath"`
 	Tuner                     int                   `json:"tuner"`
 	Update                    []string              `json:"update"`
-	UpdateURL                 string                `json:"update.url,omitempty"`
-	UserAgent                 string                `json:"user.agent"`
+	UpdateURL                 string                `json:"updateUrl,omitempty"`
+	UserAgent                 string                `json:"userAgent"`
 	UUID                      string                `json:"uuid"`
 	UDPxy                     string                `json:"udpxy"`
 	Version                   string                `json:"version"`
-	XepgReplaceMissingImages  bool                  `json:"xepg.replace.missing.images"`
+	XepgReplaceMissingImages  bool                  `json:"xepgReplaceMissingImages"`
 }
 
 // LanguageUI : Sprache für das WebUI

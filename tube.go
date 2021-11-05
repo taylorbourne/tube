@@ -204,14 +204,18 @@ func main() {
 
 	//Broken Out (NEW)
 	r.HandleFunc("/api/status", src.GetStatus).Methods("GET")
-	r.HandleFunc("/api/backup", src.Backup).Methods("GET")
+	r.HandleFunc("/api/backup", src.Backup).Methods("POST")
 	r.HandleFunc("/api/config", src.Config).Methods("POST")
-	r.HandleFunc("/api/filter", src.PlaylistFilter).Methods("POST")
+	r.HandleFunc("/api/playlist", src.GetPlaylistInfo).Methods("GET")
+	r.HandleFunc("/api/playlist/filter", src.PlaylistFilter).Methods("POST")
+	r.HandleFunc("/api/playlist/streams", src.GetPlaylistStreams).Methods("GET")
 	r.HandleFunc("/api/info", src.GetInfo).Methods("GET")
 	r.HandleFunc("/api/log", src.GetLog).Methods("GET")
 	r.HandleFunc("/api/log", src.DeleteLog).Methods("DELETE")
 	r.HandleFunc("/api/files/update/:type", src.UpdateFile).Methods("POST")
 	r.HandleFunc("/api/files/save/:type", src.SaveFile).Methods("POST")
+	r.HandleFunc("/api/settings", src.GetSettings).Methods("GET")
+	r.HandleFunc("/api/xepg", src.GetXEPG).Methods("GET")
 
 	// The React serve magic
 	switch *mode {

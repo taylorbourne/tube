@@ -245,7 +245,7 @@ func updateServerSettings(request RequestStruct) (settings SettingsStruct, err e
 }
 
 // Providerdaten speichern (WebUI)
-func saveFiles(request RequestStruct, fileType string) (err error) {
+func saveFiles(request FileRequest, fileType string) (err error) {
 
 	var filesMap = make(map[string]interface{})
 	var newData = make(map[string]interface{})
@@ -255,17 +255,17 @@ func saveFiles(request RequestStruct, fileType string) (err error) {
 	switch fileType {
 	case "m3u":
 		filesMap = Settings.Files.M3U
-		newData = request.Files.M3U
+		newData = request.M3U
 		indicator = "M"
 
 	case "hdhr":
 		filesMap = Settings.Files.HDHR
-		newData = request.Files.HDHR
+		newData = request.HDHR
 		indicator = "H"
 
 	case "xmltv":
 		filesMap = Settings.Files.XMLTV
-		newData = request.Files.XMLTV
+		newData = request.XMLTV
 		indicator = "X"
 	}
 

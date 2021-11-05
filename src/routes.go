@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 // Index : Web Server /
@@ -610,7 +612,7 @@ func HDHRUpdate(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func Info(w http.ResponseWriter, r *http.Request) {
+func GetInfo(w http.ResponseWriter, r *http.Request) {
 	response := InfoResponse{
 		ARCH:         System.ARCH,
 		EpgSource:    Settings.EpgSource,
@@ -628,6 +630,44 @@ func Info(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
+}
+
+func GetLog(w http.ResponseWriter, r *http.Request) {
+	response := WebScreenLog.Log
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
+func DeleteLog(w http.ResponseWriter, r *http.Request) {
+	response := WebScreenLog.Log
+	WebScreenLog.Log = make([]string, 0)
+	WebScreenLog.Errors = 0
+	WebScreenLog.Warnings = 0
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
+func UpdateFile(w http.ResponseWriter, r *http.Request) {
+	var request FileRequest
+	fileType := mux.Vars(r)["type"]
+	err := updateFile(request, fileType)
+	if err != nil {
+		httpStatusError(w, r, 500)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func SaveFile(w http.ResponseWriter, r *http.Request) {
+	var request FileRequest
+	fileType := mux.Vars(r)["type"]
+	_ = json.NewDecoder(r.Body).Decode(&request)
+	err := saveFiles(request, fileType)
+
+	if err == nil {
+		httpStatusError(w, r, 500)
+	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func PlaylistFilter(w http.ResponseWriter, r *http.Request) {

@@ -207,8 +207,11 @@ func main() {
 	r.HandleFunc("/api/backup", src.Backup).Methods("GET")
 	r.HandleFunc("/api/config", src.Config).Methods("POST")
 	r.HandleFunc("/api/filter", src.PlaylistFilter).Methods("POST")
-	r.HandleFunc("/api/hdhr/update", src.HDHRUpdate).Methods("POST")
-	r.HandleFunc("/api/info", src.Info).Methods("GET")
+	r.HandleFunc("/api/info", src.GetInfo).Methods("GET")
+	r.HandleFunc("/api/log", src.GetLog).Methods("GET")
+	r.HandleFunc("/api/log", src.DeleteLog).Methods("DELETE")
+	r.HandleFunc("/api/files/update/:type", src.UpdateFile).Methods("POST")
+	r.HandleFunc("/api/files/save/:type", src.SaveFile).Methods("POST")
 
 	// The React serve magic
 	switch *mode {
@@ -219,10 +222,10 @@ func main() {
 		if err != nil {
 			log.Fatalf("Cannot parse proxy address: %s", err)
 		}
-		r.Handle("/", httputil.NewSingleHostReverseProxy(u))
+		r.Handle("/web", httputil.NewSingleHostReverseProxy(u))
 	case "dir":
 		// Dir mode is useful if you build your react app but don't want to embed it in the binary, such as Docker deploys
-		r.Handle("/", http.FileServer(EmbedDir{http.Dir(*dir)}))
+		r.Handle("/web", http.FileServer(EmbedDir{http.Dir(*dir)}))
 	case "embed":
 		// Embed uses the new 1.16+ Embed functionality
 		filesystem := fs.FS(embeded)
@@ -230,7 +233,7 @@ func main() {
 		if err != nil {
 			log.Fatal("Cannot open filesystem", err)
 		}
-		r.Handle("/", http.FileServer(EmbedDir{http.FS(static)}))
+		r.Handle("/web", http.FileServer(EmbedDir{http.FS(static)}))
 	default:
 		// Any other mode would assume you have a reverse proxy, like nginx, that filters traffic
 		log.Println("No react mode; this only works if you have a frontend reverse proxy")

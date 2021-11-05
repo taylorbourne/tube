@@ -639,6 +639,7 @@ func saveWizard(request ConfigRequest) (err error) {
 
 	err = saveSettings(Settings)
 	if err != nil {
+		System.ConfigurationWizard = false
 		return
 	}
 

@@ -17,9 +17,8 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var response []byte
 	var path = r.URL.Path
-	var debug string
 
-	debug = fmt.Sprintf("Web Server Request:Path: %s", path)
+	debug := fmt.Sprintf("Web Server Request:Path: %s", path)
 	showDebug(debug, 2)
 
 	switch path {

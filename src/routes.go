@@ -650,6 +650,17 @@ func GetXEPG(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func SaveXEPG(w http.ResponseWriter, r *http.Request) {
+	var request XEPGRequest
+
+	err := saveXEpgMapping(request)
+	if err != nil {
+		httpStatusError(w, r, 500)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
 func GetLog(w http.ResponseWriter, r *http.Request) {
 	response := WebScreenLog.Log
 	w.WriteHeader(http.StatusOK)
@@ -714,6 +725,20 @@ func GetPlaylistInfo(w http.ResponseWriter, r *http.Request) {
 
 func GetSettings(w http.ResponseWriter, r *http.Request) {
 	var response SettingsResponse = Settings
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
+func SaveSettings(w http.ResponseWriter, r *http.Request) {
+	var request SettingsRequest
+	var response SettingsResponse = Settings
+	_ = json.NewDecoder(r.Body).Decode(&request)
+	settings, err := updateServerSettings(request)
+	response = settings
+	if err != nil {
+		httpStatusError(w, r, 500)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
 }

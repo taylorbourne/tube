@@ -15,10 +15,10 @@ import (
 )
 
 // Einstellungen ändern (WebUI)
-func updateServerSettings(request RequestStruct) (settings SettingsStruct, err error) {
+func updateServerSettings(request SettingsRequest) (settings SettingsStruct, err error) {
 
 	var oldSettings = jsonToMap(mapToJSON(Settings))
-	var newSettings = jsonToMap(mapToJSON(request.Settings))
+	var newSettings = jsonToMap(mapToJSON(request))
 	var reloadData = false
 	var cacheImages = false
 	var createXEPGFiles = false
@@ -495,7 +495,7 @@ func saveFilter(request map[int64]interface{}) (settings SettingsStruct, err err
 }
 
 // XEPG Mapping speichern
-func saveXEpgMapping(request RequestStruct) (err error) {
+func saveXEpgMapping(request XEPGRequest) (err error) {
 
 	var tmp = Data.XEPG
 

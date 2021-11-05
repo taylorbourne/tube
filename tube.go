@@ -215,7 +215,9 @@ func main() {
 	r.HandleFunc("/api/files/update/:type", src.UpdateFile).Methods("POST")
 	r.HandleFunc("/api/files/save/:type", src.SaveFile).Methods("POST")
 	r.HandleFunc("/api/settings", src.GetSettings).Methods("GET")
+	r.HandleFunc("/api/settings", src.SaveSettings).Methods("POST")
 	r.HandleFunc("/api/xepg", src.GetXEPG).Methods("GET")
+	r.HandleFunc("/api/xepg", src.SaveXEPG).Methods("POST")
 
 	// The React serve magic
 	switch *mode {

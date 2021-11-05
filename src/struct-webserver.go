@@ -69,11 +69,39 @@ type PlaylistReponse struct {
 	M3U M3U `json:"m3u"`
 }
 
+type SettingsRequest struct {
+	API                      *bool     `json:"api,omitempty"`
+	BackupKeep               *int      `json:"backupKeep,omitempty"`
+	BackupPath               *string   `json:"backupPath,omitempty"`
+	Buffer                   *string   `json:"buffer,omitempty"`
+	BufferSize               *int      `json:"bufferSizeKb,omitempty"`
+	BufferTimeout            *float64  `json:"bufferTimeout,omitempty"`
+	CacheImages              *bool     `json:"cacheImages,omitempty"`
+	EpgSource                *string   `json:"epgSource,omitempty"`
+	FFmpegOptions            *string   `json:"ffmpegOptions,omitempty"`
+	FFmpegPath               *string   `json:"ffmpegPath,omitempty"`
+	VLCOptions               *string   `json:"vlcOptions,omitempty"`
+	VLCPath                  *string   `json:"vlcPath,omitempty"`
+	FilesUpdate              *bool     `json:"filesUpdate,omitempty"`
+	TempPath                 *string   `json:"tempPath,omitempty"`
+	Tuner                    *int      `json:"tuner,omitempty"`
+	UDPxy                    *string   `json:"udpxy,omitempty"`
+	Update                   *[]string `json:"update,omitempty"`
+	UserAgent                *string   `json:"userAgent,omitempty"`
+	XepgReplaceMissingImages *bool     `json:"xepgReplaceMissingImages,omitempty"`
+	SchemeM3U                *string   `json:"schemeM3u,omitempty"`
+	SchemeXML                *string   `json:"schemeXml,omitempty"`
+}
+
 type SettingsResponse = SettingsStruct
 
 type StreamResponse struct {
 	Active   []string `json:"activeStreams"`
 	Inactive []string `json:"inactiveStreams"`
+}
+
+type XEPGRequest struct {
+	EpgMapping map[string]interface{} `json:"epgMapping,omitempty"`
 }
 
 // **** LEGACY BELOW THIS LINE **** //

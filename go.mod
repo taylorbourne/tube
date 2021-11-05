@@ -1,4 +1,4 @@
-module xteve
+module tube
 
 go 1.16
 

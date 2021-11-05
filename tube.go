@@ -18,7 +18,7 @@ import (
 
 	"strings"
 
-	"xteve/src"
+	"tube/src"
 )
 
 // Name
@@ -34,12 +34,12 @@ const DBVersion = "2.1.0"
 const APIVersion = "1.1.0"
 
 var homeDirectory = fmt.Sprintf("%s%s.%s%s", src.GetUserHomeDirectory(), string(os.PathSeparator), strings.ToLower(Name), string(os.PathSeparator))
-var samplePath = fmt.Sprintf("%spath%sto%sxteve%s", string(os.PathSeparator), string(os.PathSeparator), string(os.PathSeparator), string(os.PathSeparator))
+var samplePath = fmt.Sprintf("%spath%sto%tube%s", string(os.PathSeparator), string(os.PathSeparator), string(os.PathSeparator), string(os.PathSeparator))
 var sampleRestore = fmt.Sprintf("%spath%sto%sfile%s", string(os.PathSeparator), string(os.PathSeparator), string(os.PathSeparator), string(os.PathSeparator))
 
 var configFolder = flag.String("config", "", ": Config Folder        ["+samplePath+"] (default: "+homeDirectory+")")
-var port = flag.String("port", "", ": Server port          [34400] (default: 34400)")
-var restore = flag.String("restore", "", ": Restore from backup  ["+sampleRestore+"xteve_backup.zip]")
+var port = flag.String("port", ":34400", ": Server port          [34400] (default: 34400)")
+var restore = flag.String("restore", "", ": Restore from backup  ["+sampleRestore+"tube_backup.zip]")
 var debug = flag.Int("debug", 0, ": Debug level          [0 - 3] (default: 0)")
 var info = flag.Bool("info", false, ": Show system info")
 var h = flag.Bool("h", false, ": Show help")
@@ -193,41 +193,41 @@ func main() {
 
 	// mux.HandleFunc("/api", basicAPI)
 	r.HandleFunc("/", src.Index)
-	r.HandleFunc("/stream/", src.Stream)
-	r.HandleFunc("/xmltv/", src.Tube)
-	r.HandleFunc("/m3u/", src.Tube)
-	r.HandleFunc("/web/", src.Web)
-	r.HandleFunc("/download/", src.Download)
-	r.HandleFunc("/api/", src.API)
-	r.HandleFunc("/images/", src.Images)
-	r.HandleFunc("/data_images/", src.DataImages)
-
-	//Broken Out (NEW)
-	r.HandleFunc("/api/status", src.GetStatus).Methods("GET")
 	r.HandleFunc("/api/backup", src.Backup).Methods("POST")
 	r.HandleFunc("/api/config", src.Config).Methods("POST")
+	r.HandleFunc("/api/info", src.GetInfo).Methods("GET")
+	r.HandleFunc("/api/files/update/:type", src.UpdateFile).Methods("POST")
+	r.HandleFunc("/api/files/save/:type", src.SaveFile).Methods("POST")
+	r.HandleFunc("/api/log", src.GetLog).Methods("GET")
+	r.HandleFunc("/api/log", src.DeleteLog).Methods("DELETE")
 	r.HandleFunc("/api/playlist", src.GetPlaylistInfo).Methods("GET")
 	r.HandleFunc("/api/playlist/filter", src.PlaylistFilter).Methods("POST")
 	r.HandleFunc("/api/playlist/streams", src.GetPlaylistStreams).Methods("GET")
-	r.HandleFunc("/api/info", src.GetInfo).Methods("GET")
-	r.HandleFunc("/api/log", src.GetLog).Methods("GET")
-	r.HandleFunc("/api/log", src.DeleteLog).Methods("DELETE")
-	r.HandleFunc("/api/files/update/:type", src.UpdateFile).Methods("POST")
-	r.HandleFunc("/api/files/save/:type", src.SaveFile).Methods("POST")
+	r.HandleFunc("/api/restore", src.Restore).Methods("POST")
 	r.HandleFunc("/api/settings", src.GetSettings).Methods("GET")
 	r.HandleFunc("/api/settings", src.SaveSettings).Methods("POST")
+	r.HandleFunc("/api/status", src.GetStatus).Methods("GET")
+	r.HandleFunc("/api/update/:type", src.Update).Methods("POST")
 	r.HandleFunc("/api/xepg", src.GetXEPG).Methods("GET")
 	r.HandleFunc("/api/xepg", src.SaveXEPG).Methods("POST")
+	r.HandleFunc("/data_images/", src.DataImages)
+	r.HandleFunc("/download/", src.Download)
+	r.HandleFunc("/images/", src.Images)
+	r.HandleFunc("/m3u/", src.Tube)
+	r.HandleFunc("/stream/", src.Stream)
+	r.HandleFunc("/xmltv/", src.Tube)
 
 	// The React serve magic
 	switch *mode {
 	case "proxy":
 		// Proxy mode is most useful for development
 		// Preserves live-reload
+		proxy, err := NewProxy(*proxy)
 		u, err := url.Parse(*proxy)
 		if err != nil {
 			log.Fatalf("Cannot parse proxy address: %s", err)
 		}
+		log.Println("Starting proxy server on", u)
 		r.Handle("/web", httputil.NewSingleHostReverseProxy(u))
 	case "dir":
 		// Dir mode is useful if you build your react app but don't want to embed it in the binary, such as Docker deploys
@@ -250,8 +250,24 @@ func main() {
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
+	log.Println("Starting server on port", *port)
 	log.Println(s.ListenAndServe())
 
+}
+
+func ProxyRequestHandler(proxy *httputil.ReverseProxy) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		proxy.ServeHTTP(w, r)
+	}
+}
+
+func NewProxy(targetHost string) (*httputil.ReverseProxy, error) {
+	url, err := url.Parse(targetHost)
+	if err != nil {
+		return nil, err
+	}
+
+	return httputil.NewSingleHostReverseProxy(url), nil
 }
 
 // EmbedDir provides a convenience method to default requests back to /index.html, allowing react-router to work correctly

@@ -8,6 +8,7 @@ package src
 import (
 	"bufio"
 	"bytes"
+	"embed"
 	"errors"
 	"fmt"
 	"io"
@@ -22,6 +23,8 @@ import (
 	"strings"
 	"time"
 )
+
+var embeded embed.FS
 
 func createStreamID(stream map[int]ThisStream) (streamID int) {
 
@@ -146,32 +149,23 @@ func bufferingStream(playlistID, streamingURL, channelName string, w http.Respon
 		}
 
 		// Neuer Stream bei einer bereits aktiven Playlist
-		if newStream == true {
+		if newStream {
 
 			// Prüfen ob die Playlist noch einen weiteren Stream erlaubt (Tuner)
 			if len(playlist.Streams) >= playlist.Tuner {
 
 				showInfo(fmt.Sprintf("Streaming Status:Playlist: %s - No new connections available. Tuner = %d", playlist.PlaylistName, playlist.Tuner))
 
-				// @ TODO
-				// if value, ok := webUI["html/video/stream-limit.ts"]; ok {
+				data, _ := embeded.ReadFile("frontend/build/stream-limit.ts")
+				w.WriteHeader(200)
+				w.Header().Set("Content-type", "video/mpeg")
+				w.Header().Set("Content-Length:", "0")
 
-				// 	var content string
-				// 	content = GetHTMLString(value.(string))
-
-				// 	w.WriteHeader(200)
-				// 	w.Header().Set("Content-type", "video/mpeg")
-				// 	w.Header().Set("Content-Length:", "0")
-
-				// 	for i := 1; i < 60; i++ {
-				// 		_ = i
-				// 		w.Write([]byte(content))
-				// 		time.Sleep(time.Duration(500) * time.Millisecond)
-				// 	}
-
-				// 	return
-				// }
-
+				for i := 1; i < 60; i++ {
+					_ = i
+					w.Write([]byte(data))
+					time.Sleep(time.Duration(500) * time.Millisecond)
+				}
 				return
 			}
 

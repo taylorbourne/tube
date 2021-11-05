@@ -33,9 +33,15 @@ type ConfigRequest struct {
 }
 
 type FileRequest struct {
-	HDHR  map[string]interface{} `json:"hdhr,omitempty"`
-	M3U   map[string]interface{} `json:"m3u,omitempty"`
-	XMLTV map[string]interface{} `json:"xmltv,omitempty"`
+	Base64   string                 `json:"base64,omitempty"`
+	Filename string                 `json:"filename,omitempty"`
+	HDHR     map[string]interface{} `json:"hdhr,omitempty"`
+	M3U      map[string]interface{} `json:"m3u,omitempty"`
+	XMLTV    map[string]interface{} `json:"xmltv,omitempty"`
+}
+
+type FileResponse struct {
+	LogoURL string `json:"logoURL,omitempty"`
 }
 
 type InfoResponse struct {
@@ -54,6 +60,7 @@ type InfoResponse struct {
 	XML                 string                  `json:"xepgUrl"`
 	Notification        map[string]Notification `json:"notification,omitempty"`
 	ConfigurationWizard bool                    `json:"configurationWizard"`
+	ScanInProgress      int                     `json:"scanInProgress"`
 }
 
 type Groups struct {
@@ -102,6 +109,14 @@ type StreamResponse struct {
 
 type XEPGRequest struct {
 	EpgMapping map[string]interface{} `json:"epgMapping,omitempty"`
+}
+
+type RestoreRequest struct {
+	Base64 string `json:"base64,omitempty"`
+}
+
+type RestoreResponse struct {
+	Alert string `json:"alert,omitempty"`
 }
 
 // **** LEGACY BELOW THIS LINE **** //

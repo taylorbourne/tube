@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -19,8 +18,6 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	var response []byte
 	var path = r.URL.Path
 	var debug string
-
-	setGlobalDomain(r.Host)
 
 	debug = fmt.Sprintf("Web Server Request:Path: %s", path)
 	showDebug(debug, 2)
@@ -242,265 +239,6 @@ func DataImages(w http.ResponseWriter, r *http.Request) {
 	w.Write(content)
 }
 
-// Web : Web Server /web/
-func Web(w http.ResponseWriter, r *http.Request) {
-
-	var lang = make(map[string]interface{})
-	var err error
-
-	var requestFile = strings.Replace(r.URL.Path, "/web", "html", -1)
-	var content, contentType string
-
-	var language LanguageUI
-
-	setGlobalDomain(r.Host)
-
-	// if System.Dev {
-
-	// 	lang, err = loadJSONFileToMap(fmt.Sprintf("html/lang/%s.json", Settings.Language))
-	// 	if err != nil {
-	// 		ShowError(err, 000)
-	// 	}
-
-	// } else {
-
-	// 	var languageFile = "html/lang/en.json"
-
-	// 	if _, ok := webUI[languageFile].(string); ok {
-	// 		content = ""
-	// 		lang = jsonToMap(content)
-	// 	}
-
-	// }
-
-	err = json.Unmarshal([]byte(mapToJSON(lang)), &language)
-	if err != nil {
-		ShowError(err, 000)
-		return
-	}
-
-	if getFilenameFromPath(requestFile) == "html" {
-
-		if System.ScanInProgress == 0 {
-
-			if len(Settings.Files.M3U) == 0 && len(Settings.Files.HDHR) == 0 {
-				System.ConfigurationWizard = true
-			}
-
-		}
-
-		// switch System.ConfigurationWizard {
-
-		// case true:
-		// 	file = requestFile + "configuration.html"
-		// 	Settings.AuthenticationWEB = false
-
-		// case false:
-		// 	file = requestFile + "index.html"
-
-		// }
-
-		// if System.ScanInProgress == 1 {
-		// 	file = requestFile + "maintenance.html"
-		// }
-
-		// 	requestFile = requestFile + "index.html"
-
-		// 	if _, ok := webUI[requestFile]; ok {
-
-		// 		if contentType == "text/plain" {
-		// 			w.Header().Set("Content-Disposition", "attachment; filename="+getFilenameFromPath(requestFile))
-		// 		}
-
-		// 	} else {
-
-		// 		httpStatusError(w, r, 404)
-		// 		return
-		// 	}
-
-	}
-
-	// if _, ok := webUI[requestFile].(string); ok {
-
-	// 	content = ""
-	// 	contentType = getContentType(requestFile)
-
-	// 	if contentType == "text/plain" {
-	// 		w.Header().Set("Content-Disposition", "attachment; filename="+getFilenameFromPath(requestFile))
-	// 	}
-
-	// } else {
-	// 	httpStatusError(w, r, 404)
-	// 	return
-	// }
-
-	contentType = getContentType(requestFile)
-
-	if System.Dev {
-		// Lokale Webserver Dateien werden geladen, nur für die Entwicklung
-		content, _ = readStringFromFile(requestFile)
-	}
-
-	w.Header().Add("Content-Type", contentType)
-	w.WriteHeader(200)
-
-	// if contentType == "text/html" || contentType == "application/javascript" {
-	// 	content = parseTemplate(content, lang)
-	// }
-
-	w.Write([]byte(content))
-}
-
-// API : API request /api/
-func API(w http.ResponseWriter, r *http.Request) {
-
-	/*
-			API Bedingungen (ohne Authentifizierung):
-			- API muss in den Einstellungen aktiviert sein
-
-			Beispiel API Request mit curl
-			Status:
-			curl -X POST -H "Content-Type: application/json" -d '{"cmd":"status"}' http://localhost:34400/api/
-
-			- - - - -
-
-			API Bedingungen (mit Authentifizierung):
-			- API muss in den Einstellungen aktiviert sein
-			- API muss bei den Authentifizierungseinstellungen aktiviert sein
-			- Benutzer muss die Berechtigung API haben
-
-			Nach jeder API Anfrage wird ein Token generiert, dieser ist einmal in 60 Minuten gültig.
-			In jeder Antwort ist ein neuer Token enthalten
-
-			Beispiel API Request mit curl
-			Login:
-			curl -X POST -H "Content-Type: application/json" -d '{"cmd":"login","username":"plex","password":"123"}' http://localhost:34400/api/
-
-			Antwort:
-			{
-		  	"status": true,
-		  	"token": "U0T-NTSaigh-RlbkqERsHvUpgvaaY2dyRGuwIIvv"
-			}
-
-			Status mit Verwendung eines Tokens:
-			curl -X POST -H "Content-Type: application/json" -d '{"cmd":"status","token":"U0T-NTSaigh-RlbkqERsHvUpgvaaY2dyRGuwIIvv"}' http://localhost:4400/api/
-
-			Antwort:
-			{
-			  "epg.source": "XEPG",
-			  "status": true,
-			  "streams.active": 7,
-			  "streams.all": 63,
-			  "streams.xepg": 2,
-			  "token": "mXiG1NE1MrTXDtyh7PxRHK5z8iPI_LzxsQmY-LFn",
-			  "url.dvr": "localhost:34400",
-			  "url.m3u": "http://localhost:34400/m3u/xteve.m3u",
-			  "url.xepg": "http://localhost:34400/xmltv/xteve.xml",
-			  "version.api": "1.1.0",
-			  "version.xteve": "1.3.0"
-			}
-	*/
-
-	setGlobalDomain(r.Host)
-	var request APIRequestStruct
-	var response APIResponseStruct
-
-	var responseAPIError = func(err error) {
-
-		var response APIResponseStruct
-
-		response.Status = false
-		response.Error = err.Error()
-		w.Write([]byte(mapToJSON(response)))
-	}
-
-	response.Status = true
-
-	if !Settings.API {
-		httpStatusError(w, r, 423)
-		return
-	}
-
-	if r.Method == "GET" {
-		httpStatusError(w, r, 404)
-		return
-	}
-
-	b, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		httpStatusError(w, r, 400)
-		return
-
-	}
-
-	err = json.Unmarshal(b, &request)
-	if err != nil {
-		httpStatusError(w, r, 400)
-		return
-	}
-
-	w.Header().Set("content-type", "application/json")
-
-	switch request.Cmd {
-	case "login": // Muss nichts übergeben werden
-
-	case "status":
-
-		response.VersionXteve = System.Version
-		response.VersionAPI = System.APIVersion
-		response.StreamsActive = int64(len(Data.Streams.Active))
-		response.StreamsAll = int64(len(Data.Streams.All))
-		response.StreamsXepg = int64(Data.XEPG.XEPGCount)
-		response.EpgSource = Settings.EpgSource
-		response.URLDvr = System.Domain
-		response.URLM3U = System.ServerProtocol.M3U + "://" + System.Domain + "/m3u/xteve.m3u"
-		response.URLXepg = System.ServerProtocol.XML + "://" + System.Domain + "/xmltv/xteve.xml"
-
-	case "update.m3u":
-		err = getProviderData("m3u", "")
-		if err != nil {
-			break
-		}
-
-		err = buildDatabaseDVR()
-		if err != nil {
-			break
-		}
-
-	case "update.hdhr":
-
-		err = getProviderData("hdhr", "")
-		if err != nil {
-			break
-		}
-
-		err = buildDatabaseDVR()
-		if err != nil {
-			break
-		}
-
-	case "update.xmltv":
-		err = getProviderData("xmltv", "")
-		if err != nil {
-			break
-		}
-
-	case "update.xepg":
-		buildXEPG(false)
-
-	default:
-		err = errors.New(getErrMsg(5000))
-
-	}
-
-	if err != nil {
-		responseAPIError(err)
-	}
-
-	w.Write([]byte(mapToJSON(response)))
-}
-
 // Download : Datei Download
 func Download(w http.ResponseWriter, r *http.Request) {
 
@@ -578,6 +316,40 @@ func Config(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func Restore(w http.ResponseWriter, r *http.Request) {
+	var request RestoreRequest
+	var response RestoreResponse
+
+	_ = json.NewDecoder(r.Body).Decode(&request)
+
+	WebScreenLog.Log = make([]string, 0)
+	WebScreenLog.Errors = 0
+	WebScreenLog.Warnings = 0
+
+	if len(request.Base64) > 0 {
+
+		newWebURL, err := xteveRestoreFromWeb(request.Base64)
+		if err != nil {
+			ShowError(err, 000)
+			response.Alert = err.Error()
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(response)
+		}
+
+		if err == nil {
+
+			if len(newWebURL) > 0 {
+				response.Alert = "Backup was successfully restored.\nThe port of the sTeVe URL has changed, you have to restart xTeVe.\nAfter a restart, xTeVe can be reached again at the following URL:\n" + newWebURL
+			} else {
+				response.Alert = "Backup was successfully restored."
+			}
+			showInfo("xTeVe:" + "Backup successfully restored.")
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(response)
+		}
+	}
+}
+
 func GetStatus(w http.ResponseWriter, r *http.Request) {
 	response := GetStatusResponse{
 		EpgSource: Settings.EpgSource,
@@ -613,18 +385,26 @@ func HDHRUpdate(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetInfo(w http.ResponseWriter, r *http.Request) {
+
+	if System.ScanInProgress == 0 {
+		if len(Settings.Files.M3U) == 0 && len(Settings.Files.HDHR) == 0 {
+			System.ConfigurationWizard = true
+		}
+	}
+
 	response := InfoResponse{
-		ARCH:         System.ARCH,
-		EpgSource:    Settings.EpgSource,
-		DVR:          System.Addresses.DVR,
-		M3U:          System.Addresses.M3U,
-		XML:          System.Addresses.XML,
-		OS:           System.OS,
-		Streams:      fmt.Sprintf("%d / %d", len(Data.Streams.Active), len(Data.Streams.All)),
-		UUID:         Settings.UUID,
-		Errors:       WebScreenLog.Errors,
-		Warnings:     WebScreenLog.Warnings,
-		Notification: System.Notification,
+		ARCH:           System.ARCH,
+		EpgSource:      Settings.EpgSource,
+		DVR:            System.Addresses.DVR,
+		M3U:            System.Addresses.M3U,
+		XML:            System.Addresses.XML,
+		OS:             System.OS,
+		Streams:        fmt.Sprintf("%d / %d", len(Data.Streams.Active), len(Data.Streams.All)),
+		UUID:           Settings.UUID,
+		Errors:         WebScreenLog.Errors,
+		Warnings:       WebScreenLog.Warnings,
+		Notification:   System.Notification,
+		ScanInProgress: System.ScanInProgress,
 		// @TODO – does this make sense somewhere else or on it's own request?
 		ConfigurationWizard: System.ConfigurationWizard,
 	}
@@ -648,6 +428,28 @@ func GetXEPG(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
+}
+
+func Files(w http.ResponseWriter, r *http.Request) {
+	fileType := mux.Vars(r)["type"]
+
+	switch fileType {
+	case "m3u":
+	}
+
+	var request FileRequest
+	var response FileResponse
+	if len(request.Base64) > 0 {
+		LogoURL, err := uploadLogo(request.Base64, request.Filename)
+		if err != nil {
+			httpStatusError(w, r, 500)
+			return
+		}
+		response.LogoURL = LogoURL
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
+	}
+
 }
 
 func SaveXEPG(w http.ResponseWriter, r *http.Request) {
@@ -689,11 +491,27 @@ func UpdateFile(w http.ResponseWriter, r *http.Request) {
 
 func SaveFile(w http.ResponseWriter, r *http.Request) {
 	var request FileRequest
+	var response FileResponse
 	fileType := mux.Vars(r)["type"]
 	_ = json.NewDecoder(r.Body).Decode(&request)
+
+	if fileType == "logo" {
+		if len(request.Base64) > 0 {
+			LogoURL, err := uploadLogo(request.Base64, request.Filename)
+			if err != nil {
+				httpStatusError(w, r, 500)
+				return
+			}
+			response.LogoURL = LogoURL
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+	}
+
 	err := saveFiles(request, fileType)
 
-	if err == nil {
+	if err != nil {
 		httpStatusError(w, r, 500)
 	}
 	w.WriteHeader(http.StatusOK)
@@ -750,9 +568,57 @@ func PlaylistFilter(w http.ResponseWriter, r *http.Request) {
 
 	response, err := saveFilter(request)
 
-	if err == nil {
+	if err != nil {
 		httpStatusError(w, r, 500)
 	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
+}
+
+func Update(w http.ResponseWriter, r *http.Request) {
+	var err error
+	updateType := mux.Vars(r)["type"]
+
+	switch updateType {
+	case "m3u":
+		err = getProviderData("m3u", "")
+		if err != nil {
+			break
+		}
+		err = buildDatabaseDVR()
+		if err != nil {
+			break
+		}
+
+	case "hdhr":
+		err = getProviderData("hdhr", "")
+		if err != nil {
+			break
+		}
+
+		err = buildDatabaseDVR()
+		if err != nil {
+			break
+		}
+
+	case "xmltv":
+		err = getProviderData("xmltv", "")
+		if err != nil {
+			break
+		}
+
+	case "update.xepg":
+		buildXEPG(false)
+
+	default:
+		err = errors.New(getErrMsg(5000))
+	}
+
+	if err != nil {
+		httpStatusError(w, r, 500)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
 }

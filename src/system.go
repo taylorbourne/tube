@@ -196,7 +196,7 @@ func saveSettings(settings SettingsStruct) (err error) {
 	Settings = settings
 
 	if System.Dev == true {
-		Settings.UUID = "2019-01-DEV-xTeVe!"
+		Settings.UUID = "2019-01-DEV-tube!"
 	}
 
 	setDeviceID()

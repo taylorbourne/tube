@@ -9,7 +9,7 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceRoot}/xteve.go",
+      "program": "${workspaceRoot}/tube.go",
     }
   ]
 }

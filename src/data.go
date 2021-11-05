@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"xteve/src/internal/imgcache"
+	"tube/src/internal/imgcache"
 )
 
 // Einstellungen ändern (WebUI)
